@@ -1,5 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { createNews } from "@/services/newsService";
 import { Quote, ArrowRight } from "lucide-react";
 
 const SuccessStoriesSection = () => {
@@ -35,6 +41,24 @@ const SuccessStoriesSection = () => {
       image: "🏃‍♂️"
     }
   ];
+
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      setSubmitting(true);
+      await createNews({ title, content });
+      setOpen(false);
+      setTitle("");
+      setContent("");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <section id="stories" className="py-24 relative overflow-hidden">
@@ -91,15 +115,35 @@ const SuccessStoriesSection = () => {
             <p className="text-muted-foreground mb-6">
               Join hundreds of athletes who have achieved their goals with our support.
             </p>
-            <Button size="lg" className="bg-gradient-to-r from-primary to-primary-glow">
+            <Button onClick={() => setOpen(true)} size="lg" className="bg-gradient-to-r from-primary to-primary-glow">
               Share Your Story
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         </div>
       </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share Your Story</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="story-title">Title</Label>
+              <Input id="story-title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="story-content">Content</Label>
+              <Textarea id="story-content" value={content} onChange={(e) => setContent(e.target.value)} required />
+            </div>
+            <Button disabled={submitting} type="submit" className="w-full bg-gradient-to-r from-primary to-primary-glow">{submitting ? "Submitting..." : "Submit"}</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
+
+
 
 export default SuccessStoriesSection;

@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { createMentorship } from "@/services/mentorshipService";
 import { UserCheck, Target, Trophy, MessageCircle } from "lucide-react";
 
 const MentorshipSection = () => {
@@ -25,6 +31,26 @@ const MentorshipSection = () => {
       description: "Monitor progress with detailed analytics and celebrate achievements together."
     }
   ];
+
+  const [openForm, setOpenForm] = useState(false);
+  const [mentorName, setMentorName] = useState("");
+  const [menteeName, setMenteeName] = useState("");
+  const [goals, setGoals] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      setSubmitting(true);
+      await createMentorship({ mentorName, menteeName, goals, status: "PENDING" });
+      setOpenForm(false);
+      setMentorName("");
+      setMenteeName("");
+      setGoals("");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <section id="mentorship" className="py-24 relative overflow-hidden">
@@ -62,14 +88,39 @@ const MentorshipSection = () => {
             Join our mentorship program and get paired with someone who can help accelerate your athletic career.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-to-r from-primary to-primary-glow">
+            <Button onClick={() => setOpenForm(true)} size="lg" className="bg-gradient-to-r from-primary to-primary-glow">
               Find a Mentor
             </Button>
-            <Button variant="outline" size="lg" className="glass-button">
+            <Button onClick={() => setOpenForm(true)} variant="outline" size="lg" className="glass-button">
               Become a Mentor
             </Button>
           </div>
         </div>
+
+        <Dialog open={openForm} onOpenChange={setOpenForm}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Mentorship Request</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="mentorName">Mentor Name</Label>
+                <Input id="mentorName" value={mentorName} onChange={(e) => setMentorName(e.target.value)} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="menteeName">Mentee Name</Label>
+                <Input id="menteeName" value={menteeName} onChange={(e) => setMenteeName(e.target.value)} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="goals">Goals</Label>
+                <Textarea id="goals" value={goals} onChange={(e) => setGoals(e.target.value)} required />
+              </div>
+              <Button type="submit" disabled={submitting} className="w-full bg-gradient-to-r from-primary to-primary-glow">
+                {submitting ? "Submitting..." : "Submit"}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );

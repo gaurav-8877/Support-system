@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { createCampaign, donate } from "@/services/crowdfundingService";
 import { DollarSign, Users, Target, Zap } from "lucide-react";
 
 const FundingSection = () => {
@@ -36,6 +41,43 @@ const FundingSection = () => {
       image: "🏃‍♂️"
     }
   ];
+
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openDonate, setOpenDonate] = useState<null | number>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [goalAmount, setGoalAmount] = useState("");
+  const [donorName, setDonorName] = useState("");
+  const [donationAmount, setDonationAmount] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function onCreateCampaign(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      setSubmitting(true);
+      await createCampaign({ title, description, goalAmount });
+      setOpenCreate(false);
+      setTitle("");
+      setDescription("");
+      setGoalAmount("");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function onDonate(e: React.FormEvent) {
+    e.preventDefault();
+    if (openDonate == null) return;
+    try {
+      setSubmitting(true);
+      await donate(openDonate, { donorName, amount: donationAmount });
+      setOpenDonate(null);
+      setDonorName("");
+      setDonationAmount("");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <section id="funding" className="py-24 bg-gradient-to-br from-backdrop to-background">
@@ -84,7 +126,7 @@ const FundingSection = () => {
                     </div>
                   </div>
                   
-                  <Button className="w-full bg-gradient-to-r from-primary to-primary-glow">
+                  <Button onClick={() => setOpenDonate(campaign.id)} className="w-full bg-gradient-to-r from-primary to-primary-glow">
                     <DollarSign className="mr-2 h-4 w-4" />
                     Support Now
                   </Button>
@@ -113,11 +155,53 @@ const FundingSection = () => {
             </div>
           </div>
           
-          <Button size="lg" className="bg-gradient-to-r from-primary to-primary-glow">
+          <Button onClick={() => setOpenCreate(true)} size="lg" className="bg-gradient-to-r from-primary to-primary-glow">
             Start Your Campaign
           </Button>
         </div>
       </div>
+
+      <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Campaign</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onCreateCampaign} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="goalAmount">Goal Amount</Label>
+              <Input id="goalAmount" type="number" min="0" step="0.01" value={goalAmount} onChange={(e) => setGoalAmount(e.target.value)} required />
+            </div>
+            <Button disabled={submitting} type="submit" className="w-full bg-gradient-to-r from-primary to-primary-glow">{submitting ? "Creating..." : "Create"}</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openDonate != null} onOpenChange={(open) => !open ? setOpenDonate(null) : null}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Make a Donation</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onDonate} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="donorName">Your Name</Label>
+              <Input id="donorName" value={donorName} onChange={(e) => setDonorName(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="donationAmount">Amount</Label>
+              <Input id="donationAmount" type="number" min="0" step="0.01" value={donationAmount} onChange={(e) => setDonationAmount(e.target.value)} required />
+            </div>
+            <Button disabled={submitting} type="submit" className="w-full bg-gradient-to-r from-primary to-primary-glow">{submitting ? "Donating..." : "Donate"}</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

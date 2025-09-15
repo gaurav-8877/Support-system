@@ -1,7 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 const HeroSection = () => {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setOpen(false);
+    setName("");
+    setEmail("");
+  }
+
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
@@ -24,7 +39,7 @@ const HeroSection = () => {
         </div>
         
         <div className="slide-up flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-          <Button size="lg" className="bg-gradient-to-r from-primary to-primary-glow hover:shadow-[var(--shadow-elevated)] transition-all duration-300 scale-hover">
+          <Button onClick={() => setOpen(true)} size="lg" className="bg-gradient-to-r from-primary to-primary-glow hover:shadow-[var(--shadow-elevated)] transition-all duration-300 scale-hover">
             Start Your Journey
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
@@ -54,6 +69,24 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Get Started</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <Button type="submit" className="w-full bg-gradient-to-r from-primary to-primary-glow">Submit</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

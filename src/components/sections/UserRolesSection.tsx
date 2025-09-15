@@ -1,4 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Heart, Briefcase, Shield } from "lucide-react";
 
@@ -58,6 +62,17 @@ const UserRolesSection = () => {
     }
   ];
 
+  const [open, setOpen] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState("");
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setOpen(false);
+    setFullName("");
+    setRole("");
+  }
+
   return (
     <section className="py-24 bg-gradient-to-br from-backdrop to-background">
       <div className="container mx-auto px-4">
@@ -94,6 +109,7 @@ const UserRolesSection = () => {
                 </ul>
                 
                 <Button 
+                  onClick={() => setOpen(true)}
                   className={`w-full bg-gradient-to-r ${role.gradient} text-white border-0 shadow-md hover:shadow-lg transition-all duration-300`}
                   size="sm"
                 >
@@ -127,6 +143,24 @@ const UserRolesSection = () => {
           </div>
         </div>
       </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Express Interest</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="desiredRole">Desired Role</Label>
+              <Input id="desiredRole" value={role} onChange={(e) => setRole(e.target.value)} required />
+            </div>
+            <Button type="submit" className="w-full bg-gradient-to-r from-primary to-primary-glow">Submit</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
