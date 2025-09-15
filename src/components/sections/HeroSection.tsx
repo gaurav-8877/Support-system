@@ -10,11 +10,30 @@ const HeroSection = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setOpen(false);
-    setName("");
-    setEmail("");
+    try {
+      const response = await fetch('http://localhost:8080/api/forms/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, message: 'Interested in starting their journey' }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(result.message);
+        setOpen(false);
+        setName("");
+        setEmail("");
+      } else {
+        alert('Failed to submit form. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Failed to submit form. Please try again.');
+    }
   }
 
   return (

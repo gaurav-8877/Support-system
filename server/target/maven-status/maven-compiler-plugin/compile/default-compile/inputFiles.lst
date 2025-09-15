@@ -1,0 +1,12 @@
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\config\WebConfig.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\controller\CrowdfundingController.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\controller\MentorshipController.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\controller\NewsController.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\controller\PlayerController.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\model\Campaign.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\model\Donation.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\model\Mentorship.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\model\NewsItem.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\model\Player.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\repo\InMemoryStore.java
+G:\support system\rise-connect-main\server\src\main\java\com\riseconnect\RiseConnectApplication.java
